@@ -5,11 +5,14 @@ from time import sleep
 import pyautogui
 from dotenv import load_dotenv
 from selenium import webdriver
-from selenium.common.exceptions import (ElementNotInteractableException,
-                                        InvalidElementStateException,
-                                        NoSuchElementException,
-                                        TimeoutException)
+from selenium.common.exceptions import (
+    ElementNotInteractableException,
+    InvalidElementStateException,
+    NoSuchElementException,
+    TimeoutException,
+)
 from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions as EC
@@ -49,7 +52,10 @@ def open_webdriver(url):
     # dont allow browser closure
     options.add_experimental_option("detach", True)
     options.add_argument("--window-position=50,0")
-    driver = webdriver.Chrome(ChromeDriverManager().install(), options=options)
+    options.add_argument("--window-size=1000,1100")
+    driver = webdriver.Chrome(
+        service=Service(ChromeDriverManager().install()), options=options
+    )
     driver.get(url)
     return driver
 
@@ -87,8 +93,10 @@ def login():
             sleep(3)
             password_area.send_keys(CEC_PASSWORD)
             password_area.send_keys(Keys.ENTER)
-        
-        logger.info("Please complete the SSO DUO Push, the script will pick up next steps automatically")
+
+        logger.info(
+            "Please complete the SSO DUO Push, the script will pick up next steps automatically"
+        )
         # wait for SSO Duo push to complete
         # citrix gateway login
         if wait_for_element_presence(driver, "passwd"):
